@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+Pasos
+Step 1 — Crear el repositorio en GitHub
+Creá un repositorio público en GitHub. Hacé al menos un commit inicial y tené a mano la URL del repo (ej: https://github.com/tu-usuario/tu-repo). La vas a necesitar en el Step 5.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Step 2 — Obtener tus datos de candidato
+Hacé una llamada GET a la API pasando tu email como parámetro:
 
-Currently, two official plugins are available:
+GET {BASE_URL}/api/candidate/get-by-email?email=TU_EMAIL
+Respuesta (200):
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+{
+  "uuid": "a1b2c3d4-...",
+  "candidateId": "a1b2c3d4",
+  "applicationId": "a1b2c3d4",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com"
+}
+Estos los vas a usar para enviar tu postulación.
 
-## React Compiler
+Step 3 — Obtener la lista de posiciones abiertas
+Hacé una llamada GET para obtener las posiciones disponibles:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+GET {BASE_URL}/api/jobs/get-list
+Respuesta (200):
 
-## Expanding the ESLint configuration
+[
+  { "id": "4416372005", "title": "Fullstack developer" },
+  { "id": "9100000001", "title": "Head Chef" }
+]
+Step 4 — Mostrar un listado de posiciones
+Creá un componente en React que muestre un listado de las posiciones obtenidas en el paso anterior. Cada item de la lista debe incluir:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Título de la posición (title)
+Un campo de input donde puedas ingresar la URL de tu repositorio de GitHub
+Un botón "Submit" para enviar tu postulación a esa posición
+Usá el estilo que prefieras — lo importante es que se vea prolijo y funcional.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Step 5 — Enviar tu postulación
+Presioná el botón "Submit" para la posición a la que estás aplicando dentro de esta lista, llamando a la API con el siguiente body:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+POST {BASE_URL}/api/candidate/apply-to-job
+Content-Type: application/json
+Body:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+{
+  "uuid": "tu uuid (del Step 2)",
+  "jobId": "id de la posición (del Step 3)",
+  "candidateId": "tu candidateId (del Step 2)",
+  "repoUrl": "https://github.com/tu-usuario/tu-repo"
+}
+Campo	Valor
+uuid	Tu uuid obtenido en el Step 2
+jobId	El id de la posición desde la que hacés submit
+candidateId	Tu candidateId obtenido en el Step 2
+repoUrl	URL de tu repositorio de GitHub
+Respuesta exitosa (200):
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+{ "ok": true }
