@@ -47,6 +47,10 @@ export const applyToJob = async (data: {
 
   // Debug log to verify payload being sent
   console.log("Applying to job with data:", data);
+  const jsonData = JSON.stringify(data);
+
+  console.log("Objeto original:", data);
+  console.log("Convertido a JSON:", jsonData);
 
   // Handle API error response
   if (!response.ok) {

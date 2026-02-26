@@ -27,6 +27,7 @@ function App() {
 
         const jobsData = await getJobs();
         setJobs(jobsData);
+        //console.log("Jobs data:", jobsData);
 
       } catch (err: any) {
         // Handle API errors
